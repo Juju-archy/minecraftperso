@@ -1,0 +1,16 @@
+[16:40:13] [ServerMain/ERROR]: Failed to store properties to file: server.properties
+[16:40:13] [ServerMain/INFO]: Environment: Environment[sessionHost=https://sessionserver.mojang.com, servicesHost=https://api.minecraftservices.com, name=PROD]
+[16:40:13] [ServerMain/ERROR]: Failed to start the minecraft server
+java.nio.file.AccessDeniedException: ./world/session.lock
+	at java.base/sun.nio.fs.UnixException.translateToIOException(UnixException.java:90) ~[?:?]
+	at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:106) ~[?:?]
+	at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:111) ~[?:?]
+	at java.base/sun.nio.fs.UnixFileSystemProvider.newFileChannel(UnixFileSystemProvider.java:224) ~[?:?]
+	at java.base/java.nio.channels.FileChannel.open(FileChannel.java:309) ~[?:?]
+	at java.base/java.nio.channels.FileChannel.open(FileChannel.java:369) ~[?:?]
+	at azk.a(SourceFile:34) ~[server-1.21.3.jar:?]
+	at ewd$c.<init>(SourceFile:374) ~[server-1.21.3.jar:?]
+	at ewd.d(SourceFile:353) ~[server-1.21.3.jar:?]
+	at net.minecraft.server.Main.main(SourceFile:137) ~[server-1.21.3.jar:?]
+	at net.minecraft.bundler.Main.lambda$run$0(Main.java:54) ~[?:?]
+	at java.base/java.lang.Thread.run(Thread.java:1583) [?:?]
