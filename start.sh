@@ -1,1 +1,1 @@
-java -Xmx2048M -Xms2048M -jar server.jar nogui
+java -Xmx3G -Xms3G -jar server.jar nogui
