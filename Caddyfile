@@ -1,0 +1,13 @@
+{
+        http_port 8080
+}
+
+:8080 {
+        root * ./html/dist
+        file_server
+        @websockets {
+                header Connection *Upgrade*
+                header Upgrade websocket
+        }
+        reverse_proxy @websockets localhost:8181
+}
