@@ -1,0 +1,19 @@
+useSSL: false
+StoreType: JKS
+KeyStore: plugins/WebConsole/keystore.jks
+StorePassword: storepassword
+KeyPassword: keypassword
+host: 127.0.0.1
+port: 8181
+language: fr
+passwords:
+  admin:
+    user1:
+      password: mySecurePassword
+      commandWhitelist:
+        enabled: false
+        commandWhitelistActsAsBlacklist: false
+        whitelist:
+        - whisper
+        - gamemode survival
+  viewer: {}
