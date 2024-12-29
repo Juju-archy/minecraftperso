@@ -3,7 +3,7 @@
 }
 
 :8080 {
-  root * ./html/dist/web-console-client
+  root * ./html/client
   file_server
   @websockets {
     header Connection *Upgrade*

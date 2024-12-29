@@ -161,7 +161,7 @@ world-settings:
       entity: 50
     arrow-despawn-rate: 1200
     trident-despawn-rate: 1200
-    zombie-aggressive-towards-villager: false
+    zombie-aggressive-towards-villager: true
     nerf-spawner-mobs: false
     enable-zombie-pigmen-portal-spawns: true
     wither-spawn-sound-radius: 0
