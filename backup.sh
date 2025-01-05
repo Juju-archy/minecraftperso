@@ -1,19 +1,22 @@
 #!/bin/bash
 
-# Variables pour le dépôt Git et le répertoire cible
-REPO_URL="https://$username:$password@git.merizel.net/archy/clevercraft-backup.git"
-TARGET_DIR="/"
+# Variables pour le répertoire temporaire et le backup
 BACKUP_FOLDER="Backup-$(date +%m%d%y-%H%M)" # Horodatage pour le dossier de sauvegarde
-FSBUCKET_LOCAL_DIR="/" # Répertoire temporaire pour télécharger les fichiers du FS Bucket
+FSBUCKET_LOCAL_DIR="./tmp/" # Répertoire temporaire pour télécharger les fichiers du FS Bucket
 
-# Étape 1 : Créer un répertoire temporaire pour télécharger les fichiers
+# Variables pour Cellar S3 (utilisation du bucket world-daily)
+S3_BUCKET="s3://world-daily/$BACKUP_FOLDER"
+
+# Créer un répertoire temporaire pour télécharger les fichiers
 mkdir -p "$FSBUCKET_LOCAL_DIR"
 
-# Étape 2 : Télécharger les fichiers du FS Bucket via FTP
+# Télécharger les fichiers du FS Bucket via FTP
 echo "Downloading files from FS Bucket..."
-# Synchroniser les fichiers depuis le FS Bucket
-lftp -u $BUCKET_FTP_USERNAME,$BUCKET_FTP_PASSWORD $BUCKET_HOST << EOF
-mirror --verbose --continue --parallel=2 / $FSBUCKET_LOCAL_DIR
+lftp -u $username,$password $CC_FS_BUCKET << EOF
+get /usercache.json -o $FSBUCKET_LOCAL_DIR/usercache.json
+mirror --verbose --continue --parallel=2 /world $FSBUCKET_LOCAL_DIR/world
+mirror --verbose --continue --parallel=2 /world_nether $FSBUCKET_LOCAL_DIR/world_nether
+mirror --verbose --continue --parallel=2 /world_the_end $FSBUCKET_LOCAL_DIR/world_the_end
 EOF
 
 if [ $? -ne 0 ]; then
@@ -23,32 +26,29 @@ fi
 
 echo "FTP download completed successfully"
 
-# Étape 3 : Cloner ou mettre à jour le dépôt Git
-if [ ! -d "$TARGET_DIR/.git" ]; then
-    echo "Cloning repository..."
-    git clone "$REPO_URL" "$TARGET_DIR"
-else
-    echo "Updating repository..."
-    cd "$TARGET_DIR" || exit
-    git pull origin main
-fi
-
-# Étape 4 : Créer un dossier de sauvegarde dans le dépôt Git
-BACKUP_PATH="$TARGET_DIR/$BACKUP_FOLDER"
+# Créer un dossier de sauvegarde local temporaire
+BACKUP_PATH="./$BACKUP_FOLDER"
 mkdir -p "$BACKUP_PATH"
 
-# Étape 5 : Copier les fichiers téléchargés dans le répertoire de sauvegarde
+# Copier les fichiers téléchargés dans le répertoire de sauvegarde
 echo "Copying files to $BACKUP_PATH..."
 rsync -av --progress "$FSBUCKET_LOCAL_DIR/" "$BACKUP_PATH"
 
-# Étape 6 : Ajouter les fichiers au dépôt Git
-cd "$TARGET_DIR" || exit
-git add "$BACKUP_FOLDER"
-git commit -m "Backup created on $(date)"
-git push origin main
+# Uploader les fichiers sur Cellar S3 avec s3cmd
+echo "Uploading backup to Cellar S3..."
+# Exécution de la commande s3cmd avec les variables d'environnement
+s3cmd --access_key="$CELLAR_ADDON_KEY_ID" --secret_key="$CELLAR_ADDON_KEY_SECRET" --host="$CELLAR_ADDON_HOST" --use-https="$use_https" put --recursive "$BACKUP_PATH/" "$S3_BUCKET/"
 
-# Étape 7 : Nettoyer les fichiers locaux du FS Bucket
-echo "Cleaning up local FS Bucket files..."
+if [ $? -ne 0 ]; then
+    echo "Failed to upload backup to Cellar S3 using s3cmd"
+    exit 1
+fi
+
+echo "Backup successfully uploaded to Cellar S3"
+
+# Nettoyer les fichiers locaux
+echo "Cleaning up local files..."
 rm -rf "$FSBUCKET_LOCAL_DIR"
+rm -rf "$BACKUP_PATH"
 
 echo "Backup completed successfully at $(date)"
