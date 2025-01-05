@@ -12,7 +12,7 @@ mkdir -p "$FSBUCKET_LOCAL_DIR"
 
 # Télécharger les fichiers du FS Bucket via FTP
 echo "Downloading files from FS Bucket..."
-lftp -u $username,$password $CC_FS_BUCKET << EOF
+lftp -u $BUCKET_FTP_USERNAME,$BUCKET_FTP_PASSWORD $BUCKET_HOST << EOF
 get /usercache.json -o $FSBUCKET_LOCAL_DIR/usercache.json
 mirror --verbose --continue --parallel=2 /world $FSBUCKET_LOCAL_DIR/world
 mirror --verbose --continue --parallel=2 /world_nether $FSBUCKET_LOCAL_DIR/world_nether
