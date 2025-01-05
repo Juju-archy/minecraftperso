@@ -37,7 +37,7 @@ rsync -av --progress "$FSBUCKET_LOCAL_DIR/" "$BACKUP_PATH"
 # Uploader les fichiers sur Cellar S3 avec s3cmd
 echo "Uploading backup to Cellar S3..."
 # Exécution de la commande s3cmd avec les variables d'environnement
-s3cmd --access_key="$CELLAR_ADDON_KEY_ID" --secret_key="$CELLAR_ADDON_KEY_SECRET" --host="$CELLAR_ADDON_HOST" --use-https="$use_https" put --recursive "$BACKUP_PATH/" "$S3_BUCKET/"
+s3cmd --access_key="$CELLAR_ADDON_KEY_ID" --secret_key="$CELLAR_ADDON_KEY_SECRET" --host="$CELLAR_ADDON_HOST" put --recursive "$BACKUP_PATH/" "$S3_BUCKET/"
 
 if [ $? -ne 0 ]; then
     echo "Failed to upload backup to Cellar S3 using s3cmd"
