@@ -3,7 +3,7 @@ settings:
     language-file: lang-en.yml
     debug-mode: true
     update-checker: true
-    web-address: https://clevercraft.meetfur.com:8585
+    web-address: http://localhost:8080
     web-directory:
         path: web
         auto-update: true
